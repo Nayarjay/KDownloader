@@ -22,7 +22,7 @@ def connection_user_input():
         key_password = user_inputs['key\'s password'] = input('your private key\'s password : ')
         key_path = user_inputs['key_path'] = input('path to your private key : ')
         key = paramiko.RSAKey.from_private_key_file(key_path,key_password)
-    else:
+     else:
         user_password = user_inputs['user\'s password'] = input('type your password : ')
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -49,7 +49,7 @@ def ssh_shell():
     user_password= user_inputs['user\'s password']
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    if user_inputs['connection_mode']=='SSH_key':
+    if user_inputs['connection_mode']=='SSH_key_mode':
         key = paramiko.RSAKey.from_private_key_file(key_path, ssh_key_password)
         ssh_client.connect(hostname=str(host),port=port,username=str(user),pkey= key)
     else:
@@ -142,7 +142,7 @@ def unlocked_download():
     user_password = user_inputs['user\'s password']
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    if user_inputs['connection_mode'] == 'SSH_key':
+    if user_inputs['connection_mode'] == 'SSH_key_mode':
         key = paramiko.RSAKey.from_private_key_file(key_path, ssh_key_password)
         ssh_client.connect(hostname=str(host), port=port, username=str(user), pkey=key)
     else:
@@ -184,7 +184,7 @@ def download():
  link = input('link : ')
  ssh_client = paramiko.SSHClient()
  ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
- if user_inputs['connection_mode']=='SSH_key':
+ if user_inputs['connection_mode']=='SSH_key_mode':
      key = paramiko.RSAKey.from_private_key_file(key_path, ssh_key_password)
      ssh_client.connect(hostname=str(host),port=port,username=str(user),pkey= key)
  else:
