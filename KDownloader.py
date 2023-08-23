@@ -69,13 +69,10 @@ def ssh_shell():
             logout()
             main_menu()
         else:
-            formatted_output =[]
+            # formatted_output =[]
             stdin,stdout,stderr=ssh_client.exec_command(command)
-            output = stdout.readlines()
-            for element in output:
-                formatted_output.append(element[0:len(element)-1])
-            print(*formatted_output,sep="  ")
-
+            output = stdout.read().decode().replace('\n','  ')
+            print(output)
 def main_menu():
     if user_inputs['user']==None:
      print('You are currently in the main menu, please login')
@@ -169,9 +166,9 @@ def unlocked_download():
           download_path=user_download_path
         command = 'cd ' + download_path +'; curl --verbose '+unlock_DDL_link_alldebrid(link).get('link')+' >'+filename
         stdin, stdout, stderr = ssh_client.exec_command(command)
-        output = stdout.readlines()
-        print(output)
+        output = stdout.read().decode()
         ssh_client.close()
+        print(output)
 
 def download():
  host = user_inputs['host']
@@ -200,7 +197,7 @@ def download():
       download_path=user_download_path
  command = 'cd ' + download_path +'; curl --verbose '+link+' >'+filename
  stdin, stdout, stderr = ssh_client.exec_command(command)
- output = stdout.readlines()
+ output = stdout.read().decode()
  ssh_client.close()
  print(output)
 
