@@ -30,7 +30,7 @@ def connection_user_input():
         if user_inputs['connection_mode']=='SSH_key_mode':
          ssh_client.connect(hostname=str(user_inputs['host']), port=user_inputs['port'], username=str(user_inputs['user']),pkey=key)
         else:
-            ssh_client.connect(hostname=str(user_inputs['host']), port=user_inputs['port'],username=str(user_inputs['user']), password=user_password)
+            ssh_client.connect(hostname=str(user_inputs['host']), port=user_inputs['port'],username=str(user_inputs['user']), password=user_password, look_for_keys=False, allow_agent=False)
     except Exception:
         print('Authentication failed, please try again')
         connection_user_input()
@@ -53,7 +53,7 @@ def ssh_shell():
         key = paramiko.RSAKey.from_private_key_file(key_path, ssh_key_password)
         ssh_client.connect(hostname=str(host),port=port,username=str(user),pkey= key)
     else:
-        ssh_client.connect(hostname=str(host),port=port,username=str(user),password= user_password)
+        ssh_client.connect(hostname=str(host),port=port,username=str(user),password= user_password, look_for_keys=False, allow_agent=False)
     is_remotely_connected_by_ssh = True
     while is_remotely_connected_by_ssh:
         command = input(user_inputs['user'] +':~$ ')
@@ -146,19 +146,17 @@ def unlocked_download():
         key = paramiko.RSAKey.from_private_key_file(key_path, ssh_key_password)
         ssh_client.connect(hostname=str(host), port=port, username=str(user), pkey=key)
     else:
-        ssh_client.connect(hostname=str(host), port=port, username=str(user), password=user_password)
+        ssh_client.connect(hostname=str(host), port=port, username=str(user), password=user_password,look_for_keys=False, allow_agent=False)
     if user_inputs['debrid_service']==None:
         user_inputs['debrid_service'] = input('your debrid service (type \'none\' if you don\'t have one) : ')
     if user_inputs['api_key']==None:
         user_inputs['api_key'] = input('your token or api key for your debrid service : ')
     if user_inputs['api_key']=='none' or user_inputs['debrid_service']=='none':
         print('In order to unlock links, you need to have a debrid_service. You will be redirected to the main menu.')
+        ssh_client.close()
         main_menu()
     else:
         link = input('link : ')
-        ssh_client = paramiko.SSHClient()
-        ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh_client.connect(hostname=str(host), port=port, username=str(user),pkey=key)
         default_filename = unlock_DDL_link_alldebrid(link).get('filename')
         filename=default_filename
         user_filename = input('type the name you want the file to have or let this field empty to name it by default')
@@ -173,6 +171,7 @@ def unlocked_download():
         stdin, stdout, stderr = ssh_client.exec_command(command)
         output = stdout.readlines()
         print(output)
+        ssh_client.close()
 
 def download():
  host = user_inputs['host']
@@ -188,7 +187,7 @@ def download():
      key = paramiko.RSAKey.from_private_key_file(key_path, ssh_key_password)
      ssh_client.connect(hostname=str(host),port=port,username=str(user),pkey= key)
  else:
-     ssh_client.connect(hostname=str(host),port=port,username=str(user),password= user_password)
+     ssh_client.connect(hostname=str(host),port=port,username=str(user),password=user_password, look_for_keys=False, allow_agent=False)
 
  user_filename = input('type the name you want the file to have or let this field empty to name it by default : ')
  while len(user_filename)==0:
@@ -202,6 +201,7 @@ def download():
  command = 'cd ' + download_path +'; curl --verbose '+link+' >'+filename
  stdin, stdout, stderr = ssh_client.exec_command(command)
  output = stdout.readlines()
+ ssh_client.close()
  print(output)
 
 print (welcome_message)
